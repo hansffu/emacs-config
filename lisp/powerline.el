@@ -20,9 +20,9 @@
 (defvar powerline-color2)
 
 (setq powerline-color1 "#FF9800")
-;(setq powerline-color2 "yellow")
+(setq powerline-color2 "#4DB6AC")
 ;(setq powerline-color1 "grey30")
-(setq powerline-color2 "grey40")
+;(setq powerline-color2 "grey40")
 
 (set-face-attribute 'mode-line nil
                     :background "#03A9F4"
@@ -272,7 +272,7 @@ install the memoized function over the original function."
                                   :background bg
                                   :box nil))
           (set-face-attribute cface nil
-                            :foreground "white"
+                            :foreground "black"
                             :background bg
                             :box nil))
         cface)
