@@ -29,8 +29,10 @@
 
 
 ;;Theme
-(when (display-graphic-p)
-  (load-theme 'adapta-noko-maia t))
+(if (display-graphic-p)
+    (progn
+      (load-theme 'adapta-noko-maia t))
+  (load-theme 'terminal-adapta-noko-maia t))
 
 (add-to-list 'load-path "~/.emacs.d/lisp/powerline")
 (require 'powerline)
