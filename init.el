@@ -20,24 +20,25 @@
 
 ;;Save backup files out of the way
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
-  backup-by-copying t    ; Don't delink hardlinks
-  version-control t      ; Use version numbers on backups
-  delete-old-versions t  ; Automatically delete excess backups
-  kept-new-versions 20   ; how many of the newest versions to keep
-  kept-old-versions 5    ; and how many of the old
-  )
+      backup-by-copying t    ; Don't delink hardlinks
+      version-control t      ; Use version numbers on backups
+      delete-old-versions t  ; Automatically delete excess backups
+      kept-new-versions 20   ; how many of the newest versions to keep
+      kept-old-versions 5    ; and how many of the old
+      )
 
-;(set-background-color "#222D32")
-;(set-foreground-color "#CFD8DC")
 
 ;;Theme
-(load-theme 'adapta-noko-maia t)
+(when (display-graphic-p)
+  (load-theme 'adapta-noko-maia t))
 
 (add-to-list 'load-path "~/.emacs.d/lisp/powerline")
 (require 'powerline)
 (powerline-default-theme)
 
+(global-hl-line-mode +1)
 
+;;useful plugins
 (use-package magit
   :ensure t
   :bind ("C-x g" . magit-status))
