@@ -33,7 +33,9 @@
 ;;Theme
 (load-theme 'adapta-noko-maia t)
 
+(add-to-list 'load-path "~/.emacs.d/lisp/powerline")
 (require 'powerline)
+(powerline-default-theme)
 
 
 (use-package magit
@@ -48,3 +50,25 @@
   (add-hook 'ielm-mode-hook #'paredit-mode)
   (add-hook 'lisp-mode-hook #'paredit-mode)
   (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
+
+
+;; ;;Helm mode
+;; (use-package helm
+;;   :init (helm-mode 1)
+;;   :bind (
+;; 	 ("C-c h" . helm-command-prefix)
+;; 	 ("<tab>" . helm-execute-persistent-action)
+;; 	 ("C-i" . helm-execute-persistent-action)
+;; 	 ("C-z"  . helm-select-action)
+;; 	 ("M-x" . helm-M-x))
+;;   :config
+;;   (require 'helm-config)
+;;   (setq helm-split-window-in-side-p t 
+;;       helm-move-to-line-cycle-in-source t
+;;       helm-ff-search-library-in-sexp t 
+;;       helm-scroll-amount 8 
+;;       helm-ff-file-name-history-use-recentf t
+;;       helm-echo-input-in-header-line t))
+
+
+
