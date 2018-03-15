@@ -7,9 +7,9 @@
   (package-refresh-contents)
   (package-install 'use-package))
 (add-to-list 'load-path "~/.emacs.d/lisp/")
-;;move custom variables
+;;move custom variables out of the way
 (setq custom-file "~/.emacs.d/custom.el")
-(load custom-file)
+
 
 ;;Turn off unneeded ui elements
 (setq inhibit-splash-screen t)
