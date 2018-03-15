@@ -33,6 +33,15 @@
     (progn
       (load-theme 'adapta-noko-maia t))
   (load-theme 'terminal-adapta-noko-maia t))
+;company colors
+(require 'color)
+(let ((bg (face-attribute 'default :background)))
+  (custom-set-faces
+   `(company-tooltip ((t (:inherit default :background ,(color-lighten-name bg 2)))))
+   `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
+   `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
+   `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
+   `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
 
 (add-to-list 'load-path "~/.emacs.d/lisp/powerline")
 (require 'powerline)
@@ -55,23 +64,77 @@
   (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
 
 
-;; ;;Helm mode
-;; (use-package helm
-;;   :init (helm-mode 1)
-;;   :bind (
-;; 	 ("C-c h" . helm-command-prefix)
-;; 	 ("<tab>" . helm-execute-persistent-action)
-;; 	 ("C-i" . helm-execute-persistent-action)
-;; 	 ("C-z"  . helm-select-action)
-;; 	 ("M-x" . helm-M-x))
-;;   :config
-;;   (require 'helm-config)
-;;   (setq helm-split-window-in-side-p t 
-;;       helm-move-to-line-cycle-in-source t
-;;       helm-ff-search-library-in-sexp t 
-;;       helm-scroll-amount 8 
-;;       helm-ff-file-name-history-use-recentf t
-;;       helm-echo-input-in-header-line t))
+;;better auto-complete in menus
+(use-package smex
+  :ensure t)
+
+(use-package ivy
+    :ensure t
+    :diminish ivy-mode
+    :config
+    (ivy-mode t)
+    (setq ivy-initial-inputs-alist nil))
+
+(use-package counsel
+  :ensure t
+  :bind (("M-x" . counsel-M-x)))
+
+(use-package swiper
+  :ensure t
+  :bind (("C-s" . swiper)))
+
+;navigation
+(use-package avy
+  :ensure t
+  :bind (("C-," . avy-goto-word-1)
+	 ("C-'" . avy-goto-char)))
+
+;;projectile
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-mode)
+  (setq projectile-completion-system 'ivy))
+
+(use-package counsel-projectile
+  :ensure t
+  :config
+  (add-hook 'after-init-hook 'counsel-projectile-mode))
+
+;;file browser
+(use-package neotree
+  :ensure t
+  :config
+  (global-set-key (kbd "C-c t") 'neotree-toggle)
+  (setq neo-smart-open t)
+  (setq neo-theme 'arrow))
+
+;;auto complete in code
+(use-package company
+  :ensure t
+  :bind (("C-å" . company-complete))
+  :diminish
+  :config
+  (add-hook 'after-init-hook 'global-company-mode)
+  (setq company-idle-delay t))
 
 
+;;Web stuff
+(use-package js2-mode
+  :ensure t
+  :mode "\\.js\\'"
+  :config
+  (setq-default js2-ignored-warnings '("msg.extra.trailing.comma")))
+
+(use-package rjsx-mode
+  :ensure t)
+
+(use-package web-mode
+  :ensure t
+  :mode ("\\.html\\'")
+  :config
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-engines-alist
+        '(("django" . "focus/.*\\.html\\'")
+          ("ctemplate" . "realtimecrm/.*\\.html\\'"))))
 

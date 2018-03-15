@@ -21,3 +21,5 @@ site-lisp/adventur-mode
 /recentfauto-save-lists
 elpa/
 *~
+/projectile-bookmarks.eld
+/smex-items
