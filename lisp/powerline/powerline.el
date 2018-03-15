@@ -494,9 +494,7 @@ static char * %s[] = {
 ;;;###autoload (autoload 'powerline-encoding "powerline")
 (defpowerline powerline-encoding
   (let ((buf-coding (format "%s" buffer-file-coding-system)))
-    (if (string-match "\\(dos\\|unix\\|mac\\)" buf-coding)
-        (match-string 1 buf-coding)
-      buf-coding)))
+    buf-coding))
 
 
 ;;;###autoload (autoload 'powerline-buffer-size "powerline")

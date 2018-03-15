@@ -17,6 +17,8 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
+(setq ring-bell-function 'ignore)
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 ;;Save backup files out of the way
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
@@ -117,6 +119,7 @@
   :config
   (add-hook 'after-init-hook 'global-company-mode)
   (setq company-idle-delay t))
+(global-company-mode 1)
 
 
 ;;Web stuff
@@ -137,4 +140,23 @@
   (setq web-mode-engines-alist
         '(("django" . "focus/.*\\.html\\'")
           ("ctemplate" . "realtimecrm/.*\\.html\\'"))))
+
+
+;;Flycheck
+(use-package flycheck
+  :ensure t)
+
+;;Elm
+(use-package elm-mode
+  :ensure t
+  :config
+  (setq elm-format-on-save t)
+  (add-hook 'elm-mode-hook #'elm-oracle-setup-completion)
+  (add-to-list 'company-backends 'company-elm)
+  (use-package flycheck-elm
+    :ensure t
+    :config
+    (add-hook 'flycheck-mode-hook 'flycheck-elm-setup)
+    (add-hook 'elm-mode-hook #'flycheck-mode)))
+
 
