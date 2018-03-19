@@ -51,7 +51,12 @@
 
 (global-hl-line-mode +1)
 
-;;useful plugins
+(when (eq system-type 'windows-nt)
+  (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono for Powerline-9" ))
+  (set-face-attribute 'default t :font "DejaVu Sans Mono for Powerline-9" ))
+
+  ;;useful plugins
+
 (use-package magit
   :ensure t
   :bind ("C-x g" . magit-status))
