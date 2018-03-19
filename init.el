@@ -164,4 +164,9 @@
     (add-hook 'flycheck-mode-hook 'flycheck-elm-setup)
     (add-hook 'elm-mode-hook #'flycheck-mode)))
 
-
+;;##Org##
+;prettier bullets
+(use-package org-bullets
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook 'org-bullets-mode))
