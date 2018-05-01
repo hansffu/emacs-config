@@ -25,7 +25,6 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
-
 * Appearance
 ** Save backup files out of the way
 #+BEGIN_SRC emacs-lisp
@@ -260,15 +259,15 @@ Uses prettier. Install with npm install -g prettier
 
 #+END_SRC
 
-** EXWM - Emacs window manager (Disabled)
+** COMMENT EXWM - Emacs window manager (Disabled)
 #+BEGIN_SRC emacs-lisp
-;; (use-package exwm
-;;   :ensure t
-;;   :bind
-;;   (("s-a" . async-shell-command))
-;;   :config
-;;   (require 'exwm-config)
-;;   (exwm-config-default))
+  (use-package exwm
+    :ensure t
+    :bind
+    (("s-a" . async-shell-command))
+    :config
+    (require 'exwm-config)
+    (exwm-config-default))
 
 #+END_SRC
 
