@@ -1,4 +1,6 @@
-
+* Setup
+** Package management
+#+BEGIN_SRC emacs-lisp
 (package-initialize)
 
 ;;Install packages automatically
@@ -10,9 +12,10 @@
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 ;;move custom variables out of the way
 (setq custom-file "~/.emacs.d/custom.el")
+#+END_SRC
 
-
-;;Turn off unneeded ui elements
+** Turn off unneeded ui elements
+#+BEGIN_SRC emacs-lisp
 (setq inhibit-splash-screen t)
 (global-linum-mode 1)
 (tool-bar-mode -1)
@@ -20,8 +23,12 @@
 (scroll-bar-mode -1)
 (setq ring-bell-function 'ignore)
 (defalias 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
 
-;;Save backup files out of the way
+
+* Appearance
+** Save backup files out of the way
+#+BEGIN_SRC emacs-lisp
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
       backup-by-copying t    ; Don't delink hardlinks
       version-control t      ; Use version numbers on backups
@@ -29,9 +36,10 @@
       kept-new-versions 20   ; how many of the newest versions to keep
       kept-old-versions 5    ; and how many of the old
       )
+#+END_SRC
 
-
-;;Theme
+** Theme
+#+BEGIN_SRC emacs-lisp
 (if (display-graphic-p)
     (progn
       (load-theme 'adapta-noko-maia t))
@@ -45,23 +53,33 @@
    `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
    `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
    `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
+#+END_SRC
 
+** Powerline
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'load-path "~/.emacs.d/lisp/powerline")
 (require 'powerline)
 (powerline-default-theme)
 
 (global-hl-line-mode +1)
 
+#+END_SRC
+** Set font in Windows
+#+BEGIN_SRC emacs-lisp
 (when (eq system-type 'windows-nt)
   (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono for Powerline-9" ))
   (set-face-attribute 'default t :font "DejaVu Sans Mono for Powerline-9" ))
-
-;;useful plugins
-
+#+END_SRC
+* Plugins
+#+BEGIN_SRC emacs-lisp
 (use-package magit
   :ensure t
   :bind ("C-x g" . magit-status))
+#+END_SRC
 
+** Paredit
+To keep control of parantheses
+#+BEGIN_SRC emacs-lisp
 (use-package paredit
   :ensure t
   :config
@@ -70,9 +88,11 @@
   (add-hook 'ielm-mode-hook #'paredit-mode)
   (add-hook 'lisp-mode-hook #'paredit-mode)
   (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
+#+END_SRC
 
+** Better auto-complete in menus
+#+BEGIN_SRC emacs-lisp
 
-;;better auto-complete in menus
 (use-package smex
   :ensure t)
 
@@ -104,19 +124,24 @@
   :config
   (global-undo-tree-mode 1))
 
-;navigation
+#+END_SRC
+
+** Navigation
+#+BEGIN_SRC emacs-lisp
 (use-package avy
   :ensure t
   :bind (("C-," . avy-goto-word-1)
-         ("C-'" . avy-goto-char)))
+	 ("C-'" . avy-goto-char)))
 
 (use-package crux
   :ensure t
   :bind (("C-a" . crux-move-beginning-of-line)))
 
 
+#+END_SRC
 
-;;projectile
+** Projectile project management
+#+BEGIN_SRC emacs-lisp
 (use-package projectile
   :ensure t
   :config
@@ -128,7 +153,10 @@
   :config
   (add-hook 'after-init-hook 'counsel-projectile-mode))
 
-;;file browser
+#+END_SRC
+
+** File browser
+#+BEGIN_SRC emacs-lisp
 (use-package neotree
   :ensure t
   :config
@@ -136,7 +164,10 @@
   (setq neo-smart-open t)
   (setq neo-theme 'arrow))
 
-;;auto complete in code
+#+END_SRC
+
+** Auto complete in code
+#+BEGIN_SRC emacs-lisp
 (use-package company
   :ensure t
   :bind (("C-å" . company-complete))
@@ -146,11 +177,18 @@
   (setq company-idle-delay t))
 (global-company-mode 1)
 
-;;Flycheck
+#+END_SRC
+
+** Flycheck for lint
+#+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :ensure t)
 
-;;Web stuff
+#+END_SRC
+
+** Web
+*** JS, React and Web mode
+#+BEGIN_SRC emacs-lisp
 (use-package js2-mode
   :ensure t
   :mode "\\.js\\'"
@@ -168,7 +206,10 @@
   (setq web-mode-engines-alist
         '(("django" . "focus/.*\\.html\\'")
           ("ctemplate" . "realtimecrm/.*\\.html\\'"))))
-
+#+END_SRC
+*** Code format on save
+Uses prettier. Install with npm install -g prettier
+#+BEGIN_SRC emacs-lisp
 (use-package prettier-js
   :ensure t
   :config
@@ -192,8 +233,10 @@
       (setq-local flycheck-javascript-eslint-executable eslint))))
 
 
+#+END_SRC
 
-;;Elm
+** ELM
+#+BEGIN_SRC emacs-lisp
 (use-package elm-mode
   :ensure t
   :config
@@ -205,17 +248,20 @@
     :config
     (add-hook 'flycheck-mode-hook 'flycheck-elm-setup)
     (add-hook 'elm-mode-hook #'flycheck-mode)))
+#+END_SRC
 
-;;##Org##
-;prettier bullets
-(use-package org-bullets
-  :ensure t
-  :config
-  (add-hook 'org-mode-hook 'org-bullets-mode))
+** Org mode
+#+BEGIN_SRC emacs-lisp
+  ;prettier bullets
+  (use-package org-bullets
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook 'org-bullets-mode))
 
+#+END_SRC
 
-;;##EXWM
-
+** EXWM - Emacs window manager (Disabled)
+#+BEGIN_SRC emacs-lisp
 ;; (use-package exwm
 ;;   :ensure t
 ;;   :bind
@@ -224,8 +270,10 @@
 ;;   (require 'exwm-config)
 ;;   (exwm-config-default))
 
+#+END_SRC
 
-;;##Docker##
+** Docker
+#+BEGIN_SRC emacs-lisp
 (use-package dockerfile-mode
   :ensure t
   :config
@@ -236,3 +284,4 @@
   :ensure t
   :config
   (docker-global-mode 0))
+#+END_SRC
