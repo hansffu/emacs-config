@@ -55,7 +55,7 @@
   (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono for Powerline-9" ))
   (set-face-attribute 'default t :font "DejaVu Sans Mono for Powerline-9" ))
 
-  ;;useful plugins
+;;useful plugins
 
 (use-package magit
   :ensure t
@@ -90,11 +90,30 @@
   :ensure t
   :bind (("C-s" . swiper)))
 
+(use-package which-key
+  :ensure t
+  :diminish which-key-mode
+  :config
+  (add-hook 'after-init-hook 'which-key-mode))
+
+(use-package undo-tree
+  :ensure t
+  :defer 5
+  :diminish global-undo-tree-mode
+  :config
+  (global-undo-tree-mode 1))
+
 ;navigation
 (use-package avy
   :ensure t
   :bind (("C-," . avy-goto-word-1)
 	 ("C-'" . avy-goto-char)))
+
+(use-package crux
+  :ensure t
+  :bind (("C-a" . crux-move-beginning-of-line)))
+
+
 
 ;;projectile
 (use-package projectile
@@ -126,6 +145,9 @@
   (setq company-idle-delay t))
 (global-company-mode 1)
 
+;;Flycheck
+(use-package flycheck
+  :ensure t)
 
 ;;Web stuff
 (use-package js2-mode
@@ -146,10 +168,29 @@
         '(("django" . "focus/.*\\.html\\'")
           ("ctemplate" . "realtimecrm/.*\\.html\\'"))))
 
+(use-package prettier-js
+  :ensure t
+  :config
+  (setq prettier-js-args '(
+                        "--trailing-comma" "es5"
+                        "--single-quote" "true"
+                        "--print-width" "100"
+                        ))
+  (add-hook 'js2-mode-hook 'prettier-js-mode)
+  (add-hook 'rjsx-mode-hook 'prettier-js-mode))
 
-;;Flycheck
-(use-package flycheck
-  :ensure t)
+(defun jc/use-eslint-from-node-modules ()
+  "Set local eslint if available."
+  (let* ((root (locate-dominating-file
+                (or (buffer-file-name) default-directory)
+                "node_modules"))
+         (eslint (and root
+                      (expand-file-name "node_modules/eslint/bin/eslint.js"
+                                        root))))
+    (when (and eslint (file-executable-p eslint))
+      (setq-local flycheck-javascript-eslint-executable eslint))))
+
+
 
 ;;Elm
 (use-package elm-mode
@@ -170,3 +211,27 @@
   :ensure t
   :config
   (add-hook 'org-mode-hook 'org-bullets-mode))
+
+
+;;##EXWM
+
+;; (use-package exwm
+;;   :ensure t
+;;   :bind
+;;   (("s-a" . async-shell-command))
+;;   :config
+;;   (require 'exwm-config)
+;;   (exwm-config-default))
+
+
+;;##Docker##
+(use-package dockerfile-mode
+  :ensure t
+  :config
+  (require 'dockerfile-mode)
+  (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode)))
+
+(use-package docker
+  :ensure t
+  :config
+  (docker-global-mode 0))
