@@ -237,6 +237,9 @@ Easier window navigation
 
   (use-package js2-mode
     :ensure t
+    :bind (:map js2-mode-map
+                ("M-." . nil)
+                ("C-c C-s" . nil))
     :mode "\\.js\\'"
     :config
     (setq-default js2-ignored-warnings '("msg.extra.trailing.comma")))
@@ -246,6 +249,13 @@ Easier window navigation
     :config
     (js2r-add-keybindings-with-prefix "C-c C-m")
     (add-hook 'js2-mode-hook 'js2-refactor-mode))
+
+  (use-package xref-js2
+    :init (add-hook
+           'js2-mode-hook
+           (lambda ()
+             (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+    :ensure t)
 
   (use-package rjsx-mode
     :ensure t)
@@ -276,27 +286,28 @@ Easier window navigation
 *** Code format on save
 Uses prettier. Install with npm install -g prettier
 #+BEGIN_SRC emacs-lisp
-(use-package prettier-js
-  :ensure t
-  :config
-  (setq prettier-js-args '(
-                        "--trailing-comma" "es5"
-                        "--single-quote" "true"
-                        "--print-width" "100"
-                        ))
-  (add-hook 'js2-mode-hook 'prettier-js-mode)
-  (add-hook 'rjsx-mode-hook 'prettier-js-mode))
+  (use-package prettier-js
+    :ensure t
+    :config
+    (setq prettier-js-args '(
+                          "--trailing-comma" "es5"
+                          "--single-quote" "true"
+                          "--print-width" "100"
+                          ))
+    (add-hook 'js2-mode-hook 'prettier-js-mode)
+    (add-hook 'rjsx-mode-hook 'prettier-js-mode)
+    (add-hook 'scss-mode-hook 'prettier-js-mode))
 
-(defun jc/use-eslint-from-node-modules ()
-  "Set local eslint if available."
-  (let* ((root (locate-dominating-file
-                (or (buffer-file-name) default-directory)
-                "node_modules"))
-         (eslint (and root
-                      (expand-file-name "node_modules/eslint/bin/eslint.js"
-                                        root))))
-    (when (and eslint (file-executable-p eslint))
-      (setq-local flycheck-javascript-eslint-executable eslint))))
+  (defun jc/use-eslint-from-node-modules ()
+    "Set local eslint if available."
+    (let* ((root (locate-dominating-file
+                  (or (buffer-file-name) default-directory)
+                  "node_modules"))
+           (eslint (and root
+                        (expand-file-name "node_modules/eslint/bin/eslint.js"
+                                          root))))
+      (when (and eslint (file-executable-p eslint))
+        (setq-local flycheck-javascript-eslint-executable eslint))))
 
 
 #+END_SRC
