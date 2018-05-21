@@ -163,6 +163,20 @@ Easier window navigation
     :init (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
   (global-set-key (kbd "M-o") 'ace-window)
 #+END_SRC
+Multiple cursors
+#+BEGIN_SRC emacs-lisp
+  (use-package multiple-cursors
+    :ensure t
+    :init
+    (setq mc/always-run-for-all t)
+    :bind
+    (("M-j" . mc/mark-next-like-this-word)
+     ("C-c m j" . mc/mark-next-like-this-word)
+     ("C-c m h" . mc/mark-all-like-this)
+     ("C-c m a" . mc/edit-beginnings-of-lines)
+     ("C-c m m" . mc/edit-lines)))
+
+#+END_SRC
 
 ** Projectile project management
 #+BEGIN_SRC emacs-lisp
