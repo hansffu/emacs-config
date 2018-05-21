@@ -25,6 +25,10 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
+** Rebind some keys
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-.") 'next-error)
+#+END_SRC
 * Appearance
 ** Save backup files out of the way
 #+BEGIN_SRC emacs-lisp
@@ -82,12 +86,8 @@ To keep control of parantheses
 #+BEGIN_SRC emacs-lisp
   (use-package paredit
     :ensure t
-    :config
-    (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
-    (add-hook 'lisp-interaction-mode-hook #'paredit-mode)
-    (add-hook 'ielm-mode-hook #'paredit-mode)
-    (add-hook 'lisp-mode-hook #'paredit-mode)
-    (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode)
+    :init
+    (add-hook 'prog-mode-hook 'enable-paredit-mode)
     :bind
     (("{" . paredit-open-curly)
      ("}" . paredit-close-curly)))
