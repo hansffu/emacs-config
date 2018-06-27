@@ -74,6 +74,11 @@
   (set-face-attribute 'default t :font "DejaVu Sans Mono for Powerline-9" ))
 #+END_SRC
 * Plugins
+** Utilities
+#+BEGIN_SRC emacs-lisp
+  (use-package ag
+    :ensure t)
+#+END_SRC
 ** Git
 #+BEGIN_SRC emacs-lisp
 (use-package magit
@@ -265,55 +270,55 @@ Multiple cursors
 ** Web
 *** JS, React and Web mode
 #+BEGIN_SRC emacs-lisp
-  (setq-default js-indent-level 2)
+    (setq-default js-indent-level 2)
 
-  (use-package js2-mode
-    :ensure t
-    :bind (:map js2-mode-map
-                ("M-." . nil)
-                ("C-c C-s" . nil))
-    :mode "\\.js\\'"
-    :config
-    (setq-default js2-ignored-warnings '("msg.extra.trailing.comma")))
+    (use-package js2-mode
+      :ensure t
+      :bind (:map js2-mode-map
+                  ("M-." . nil)
+                  ("C-c C-s" . nil))
+      :mode "\\.js\\'"
+      :config
+      (setq-default js2-ignored-warnings '("msg.extra.trailing.comma")))
 
-  (use-package js2-refactor
-    :ensure t
-    :config
-    (js2r-add-keybindings-with-prefix "C-c C-m")
-    (add-hook 'js2-mode-hook 'js2-refactor-mode))
+    (use-package js2-refactor
+      :ensure t
+      :config
+      (js2r-add-keybindings-with-prefix "C-c C-m")
+      (add-hook 'js2-mode-hook 'js2-refactor-mode))
 
-  (use-package xref-js2
-    :init (add-hook
-           'js2-mode-hook
-           (lambda ()
-             (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
-    :ensure t)
+    (use-package xref-js2
+      :ensure t
+      :init (add-hook
+             'js2-mode-hook
+             (lambda ()
+               (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))))
 
-  (use-package rjsx-mode
-    :ensure t)
+    (use-package rjsx-mode
+      :ensure t)
 
-  (use-package web-mode
-    :ensure t
-    :mode ("\\.html\\'")
-    :config
-    (setq web-mode-markup-indent-offset 2)
-    (setq web-mode-engines-alist
-          '(("django" . "focus/.*\\.html\\'")
-            ("ctemplate" . "realtimecrm/.*\\.html\\'"))))
+    (use-package web-mode
+      :ensure t
+      :mode ("\\.html\\'")
+      :config
+      (setq web-mode-markup-indent-offset 2)
+      (setq web-mode-engines-alist
+            '(("django" . "focus/.*\\.html\\'")
+              ("ctemplate" . "realtimecrm/.*\\.html\\'"))))
 
-  (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
-  (add-hook 'rjsx-mode-hook (lambda () (setq js2-basic-offset 2)))
+    (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
+    (add-hook 'rjsx-mode-hook (lambda () (setq js2-basic-offset 2)))
 
-  (defun jc/use-eslint-from-node-modules ()
-    "Set local eslint if available."
-    (let* ((root (locate-dominating-file
-                  (or (buffer-file-name) default-directory)
-                  "node_modules"))
-           (eslint (and root
-                        (expand-file-name "node_modules/eslint/bin/eslint.js"
-                                          root))))
-      (when (and eslint (file-executable-p eslint))
-        (setq-local flycheck-javascript-eslint-executable eslint))))
+    (defun jc/use-eslint-from-node-modules ()
+      "Set local eslint if available."
+      (let* ((root (locate-dominating-file
+                    (or (buffer-file-name) default-directory)
+                    "node_modules"))
+             (eslint (and root
+                          (expand-file-name "node_modules/eslint/bin/eslint.js"
+                                            root))))
+        (when (and eslint (file-executable-p eslint))
+          (setq-local flycheck-javascript-eslint-executable eslint))))
 #+END_SRC
 *** Code format on save
 Uses prettier. Install with npm install -g prettier
@@ -344,6 +349,16 @@ Uses prettier. Install with npm install -g prettier
 
 #+END_SRC
 
+** REST
+#+BEGIN_SRC emacs-lisp
+  (use-package restclient
+    :ensure t)
+
+  (use-package company-restclient
+    :ensure t
+    :config
+    (add-to-list 'company-backends 'company-restclient))
+#+END_SRC
 ** ELM
 #+BEGIN_SRC emacs-lisp
 (use-package elm-mode
@@ -396,4 +411,33 @@ Uses prettier. Install with npm install -g prettier
 
   (use-package docker-compose-mode
     :ensure t)
+#+END_SRC
+** Haskell
+#+BEGIN_SRC emacs-lisp
+  (use-package haskell-mode
+    :ensure t
+    :mode "\\.hs\\'"
+    :commands haskell-mode
+    :bind ("C-c C-s" . fix-imports)
+    :config
+    (custom-set-variables
+     '(haskell-ask-also-kill-buffers nil)
+     '(haskell-process-type (quote stack-ghci))
+     '(haskell-interactive-popup-errors nil))
+
+    (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
+    (add-hook 'haskell-mode-hook 'flycheck-mode)
+    (add-hook 'haskell-mode-hook (lambda ()
+				   (add-hook 'before-save-hook 'haskell-mode-format-imports nil 'local))))
+
+  (use-package company-ghc
+    :ensure t
+    :config
+    (add-to-list 'company-backends 'company-ghc)
+    (custom-set-variables '(company-ghc-show-info t)))
+
+  (use-package intero
+    :ensure t
+    :config
+    (add-hook 'haskell-mode-hook 'intero-mode))
 #+END_SRC
