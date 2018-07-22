@@ -224,14 +224,14 @@ Multiple cursors
 
 ** Auto complete in code
 #+BEGIN_SRC emacs-lisp
-(use-package company
-  :ensure t
-  :bind (("C-å" . company-complete))
-  :diminish
-  :config
-  (add-hook 'after-init-hook 'global-company-mode)
-  (setq company-idle-delay t))
-(global-company-mode 1)
+  (use-package company
+    :ensure t
+    :bind (("C-å" . company-complete))
+    :diminish
+    :config
+    (add-hook 'after-init-hook 'global-company-mode)
+    (setq company-idle-delay t))
+  (global-company-mode 1)
 
 #+END_SRC
 
@@ -466,5 +466,19 @@ Uses prettier. Install with npm install -g prettier
       :config
       (add-hook 'flycheck-mode-hook 'flycheck-rust-setup)
       (add-hook 'rust-mode-hook #'flycheck-mode)))
+
+#+END_SRC
+** Autocomplete
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :hook (prog-mode . yas-minor-mode)
+    :config
+    (yas-reload-all)
+    (add-to-list 'company-backends 'company-yasnippet))
+
+  (use-package yasnippet-snippets
+    :ensure t
+    :requires yasnippet)
 
 #+END_SRC
