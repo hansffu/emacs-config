@@ -441,3 +441,17 @@ Uses prettier. Install with npm install -g prettier
     :config
     (add-hook 'haskell-mode-hook 'intero-mode))
 #+END_SRC
+** Rust
+#+BEGIN_SRC emacs-lisp
+  (use-package rust-mode
+    :ensure t
+    :config
+    (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+
+    (use-package flycheck-rust
+      :ensure t
+      :config
+      (add-hook 'flycheck-mode-hook 'flycheck-rust-setup)
+      (add-hook 'rust-mode-hook #'flycheck-mode)))
+
+#+END_SRC
