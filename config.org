@@ -113,27 +113,8 @@ To keep control of parantheses
      (cl-callf color-saturate-name (face-foreground face) 40)))
 #+END_SRC
 
-** Better auto-complete in menus
+** Utilities
 #+BEGIN_SRC emacs-lisp
-
-(use-package smex
-  :ensure t)
-
-(use-package ivy
-    :ensure t
-    :diminish ivy-mode
-    :config
-    (ivy-mode t)
-    (setq ivy-initial-inputs-alist nil))
-
-(use-package counsel
-  :ensure t
-  :bind (("M-x" . counsel-M-x)))
-
-(use-package swiper
-  :ensure t
-  :bind (("C-s" . swiper)))
-
 (use-package which-key
   :ensure t
   :diminish which-key-mode
@@ -149,6 +130,37 @@ To keep control of parantheses
 
 #+END_SRC
 
+** HELM
+#+BEGIN_SRC emacs-lisp
+  (use-package helm
+    :ensure t
+    :bind (("M-x" . helm-M-x)
+	   ("C-x C-f" . helm-find-files)
+	   ("M-y" . helm-show-kill-ring)
+	   ("C-x b" . helm-buffers-list))
+    :init
+    (setq helm-mode-fuzzy-match t
+	  helm-completion-in-region-fuzzy-match t
+	  helm-buffers-fuzzy-matching t
+	  helm-M-x-fuzzy-match t
+	  helm-imenu-fuzzy-match t
+	  helm-locate-fuzzy-match t
+	  helm-semantic-fuzzy-match t
+	  helm-lisp-completion-at-point t
+	  helm-split-window-in-side-p t
+	  helm-ff-search-library-in-sexp t
+	  helm-ff-file-name-history-use-recentf t
+	  helm-echo-input-in-header-line t)
+    :config
+    (helm-mode 1))
+
+  (use-package swiper-helm
+    :ensure t
+    :bind (("C-s" . swiper-helm)))
+
+
+
+#+END_SRC
 ** Navigation
 #+BEGIN_SRC emacs-lisp
 (use-package avy
@@ -185,16 +197,17 @@ Multiple cursors
 
 ** Projectile project management
 #+BEGIN_SRC emacs-lisp
-(use-package projectile
-  :ensure t
-  :config
-  (projectile-mode)
-  (setq projectile-completion-system 'ivy))
+  (use-package projectile
+    :ensure t
+    :config
+    (projectile-mode)
+    (setq projectile-completion-system 'helm))
 
-(use-package counsel-projectile
-  :ensure t
-  :config
-  (add-hook 'after-init-hook 'counsel-projectile-mode))
+  (use-package helm-projectile
+    :ensure t
+    :config
+    (helm-projectile-on))
+
 
 #+END_SRC
 
