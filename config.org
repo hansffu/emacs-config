@@ -233,6 +233,14 @@ Multiple cursors
     (setq company-idle-delay t))
   (global-company-mode 1)
 
+  (use-package company-lsp
+    :ensure t
+    :init
+    (push 'company-lsp company-backends))
+
+  (use-package company-box
+    :ensure t
+    :hook (company-mode . company-box-mode))
 #+END_SRC
 
 ** Flycheck for lint
@@ -335,6 +343,25 @@ Multiple cursors
 					  root))))
       (when (and eslint (file-executable-p eslint))
 	(setq-local flycheck-javascript-eslint-executable eslint))))
+
+
+  (use-package lsp-javascript-typescript
+    :ensure t
+    :config
+    (add-hook 'js-mode-hook #'lsp-javascript-typescript-enable)
+    (add-hook 'typescript-mode-hook #'lsp-javascript-typescript-enable)
+    (add-hook 'js3-mode-hook #'lsp-javascript-typescript-enable)
+    (add-hook 'rjsx-mode #'lsp-javascript-typescript-enable))
+
+  (defun my-company-transformer (candidates)
+    (let ((completion-ignore-case t))
+      (all-completions (company-grab-symbol) candidates)))
+
+  (defun my-js-hook nil
+    (make-local-variable 'company-transformers)
+    (push 'my-company-transformer company-transformers))
+
+  (add-hook 'js-mode-hook 'my-js-hook)
 #+END_SRC
 *** Code format on save
 Uses prettier. Install with npm install -g prettier
@@ -471,14 +498,13 @@ Uses prettier. Install with npm install -g prettier
       (add-hook 'rust-mode-hook #'flycheck-mode)))
 
 #+END_SRC
-** Autocomplete
+** Snippets
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
     :ensure t
     :hook (prog-mode . yas-minor-mode)
     :config
-    (yas-reload-all)
-    (add-to-list 'company-backends 'company-yasnippet))
+    (yas-reload-all))
 
   (use-package yasnippet-snippets
     :ensure t
