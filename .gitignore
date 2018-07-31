@@ -27,3 +27,5 @@ custom.el
 /eshell
 config.el
 /projectile.cache
+emojis/
+recentf

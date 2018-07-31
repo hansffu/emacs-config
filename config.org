@@ -43,35 +43,35 @@
 
 ** Theme
 #+BEGIN_SRC emacs-lisp
-(if (display-graphic-p)
-    (progn
-      (load-theme 'adapta-noko-maia t))
-  (load-theme 'terminal-adapta-noko-maia t))
-;company colors
-(require 'color)
-(let ((bg (face-attribute 'default :background)))
-  (custom-set-faces
-   `(company-tooltip ((t (:inherit default :background ,(color-lighten-name bg 2)))))
-   `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
-   `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
-   `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
-   `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
+  (use-package doom-themes
+    :ensure t
+    :config
+    (load-theme 'doom-one t))
 #+END_SRC
 
 ** Powerline
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/lisp/powerline")
-(require 'powerline)
-(powerline-default-theme)
+  (use-package doom-modeline
+	:ensure t
+	:defer t
+	:hook (after-init . doom-modeline-init))
 
-(global-hl-line-mode +1)
-
+  (use-package all-the-icons
+    :ensure t)
 #+END_SRC
-** Set font in Windows
+** Fonts
 #+BEGIN_SRC emacs-lisp
-(when (eq system-type 'windows-nt)
-  (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono for Powerline-9" ))
-  (set-face-attribute 'default t :font "DejaVu Sans Mono for Powerline-9" ))
+  (cond 
+   ((find-font (font-spec :name "Iosevka Medium"))
+    (set-frame-font "Iosevka Medium-13"))
+   ((find-font (font-spec :name "DejaVu Sans Mono for Powerline"))
+    (set-frame-font "DejaVu Sans Mono for Powerline"-12))
+   ((find-font (font-spec :name "DejaVu Sans Mono"))
+    (set-frame-font "DejaVu Sans Mono-12"))
+   ((find-font (font-spec :name "courier"))
+    (set-frame-font "courier-12")))
+ 
+
 #+END_SRC
 * Plugins
 ** Utilities
@@ -283,55 +283,58 @@ Multiple cursors
 ** Web
 *** JS, React and Web mode
 #+BEGIN_SRC emacs-lisp
-    (setq-default js-indent-level 2)
+  (setq-default js-indent-level 2)
 
-    (use-package js2-mode
-      :ensure t
-      :bind (:map js2-mode-map
-                  ("M-." . nil)
-                  ("C-c C-s" . nil))
-      :mode "\\.js\\'"
-      :config
-      (setq-default js2-ignored-warnings '("msg.extra.trailing.comma")))
+  (use-package js2-mode
+    :ensure t
+    :bind (:map js2-mode-map
+		("M-." . nil)
+		("C-c C-s" . nil))
+    :mode "\\.js\\'"
+    :config
+    (setq-default js2-ignored-warnings '("msg.extra.trailing.comma")))
 
-    (use-package js2-refactor
-      :ensure t
-      :config
-      (js2r-add-keybindings-with-prefix "C-c C-m")
-      (add-hook 'js2-mode-hook 'js2-refactor-mode))
+  (use-package js2-refactor
+    :ensure t
+    :config
+    (js2r-add-keybindings-with-prefix "C-c C-m")
+    (add-hook 'js2-mode-hook 'js2-refactor-mode))
 
-    (use-package xref-js2
-      :ensure t
-      :init (add-hook
-             'js2-mode-hook
-             (lambda ()
-               (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))))
+  (use-package xref-js2
+    :ensure t
+    :init (add-hook
+	   'js2-mode-hook
+	   (lambda ()
+	     (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))))
 
-    (use-package rjsx-mode
-      :ensure t)
+  (use-package rjsx-mode
+    :ensure t
+    :config
+    (add-to-list 'magic-mode-alist 
+	   '("\\(import.*from \'react\';\\|\/\/ @flow\nimport.*from \'react\';\\)" . rjsx-mode)))
 
-    (use-package web-mode
-      :ensure t
-      :mode ("\\.html\\'")
-      :config
-      (setq web-mode-markup-indent-offset 2)
-      (setq web-mode-engines-alist
-            '(("django" . "focus/.*\\.html\\'")
-              ("ctemplate" . "realtimecrm/.*\\.html\\'"))))
+  (use-package web-mode
+    :ensure t
+    :mode ("\\.html\\'")
+    :config
+    (setq web-mode-markup-indent-offset 2)
+    (setq web-mode-engines-alist
+	  '(("django" . "focus/.*\\.html\\'")
+	    ("ctemplate" . "realtimecrm/.*\\.html\\'"))))
 
-    (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
-    (add-hook 'rjsx-mode-hook (lambda () (setq js2-basic-offset 2)))
+  (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
+  (add-hook 'rjsx-mode-hook (lambda () (setq js2-basic-offset 2)))
 
-    (defun jc/use-eslint-from-node-modules ()
-      "Set local eslint if available."
-      (let* ((root (locate-dominating-file
-                    (or (buffer-file-name) default-directory)
-                    "node_modules"))
-             (eslint (and root
-                          (expand-file-name "node_modules/eslint/bin/eslint.js"
-                                            root))))
-        (when (and eslint (file-executable-p eslint))
-          (setq-local flycheck-javascript-eslint-executable eslint))))
+  (defun jc/use-eslint-from-node-modules ()
+    "Set local eslint if available."
+    (let* ((root (locate-dominating-file
+		  (or (buffer-file-name) default-directory)
+		  "node_modules"))
+	   (eslint (and root
+			(expand-file-name "node_modules/eslint/bin/eslint.js"
+					  root))))
+      (when (and eslint (file-executable-p eslint))
+	(setq-local flycheck-javascript-eslint-executable eslint))))
 #+END_SRC
 *** Code format on save
 Uses prettier. Install with npm install -g prettier
