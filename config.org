@@ -199,6 +199,8 @@ Multiple cursors
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
     :ensure t
+    :init
+    (setq projectile-keymap-prefix (kbd "C-c p"))
     :config
     (projectile-mode)
     (setq projectile-completion-system 'helm))
@@ -448,9 +450,7 @@ Uses prettier. Install with npm install -g prettier
     (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode)))
 
   (use-package docker
-    :ensure t
-    :config
-    (docker-global-mode 0))
+    :ensure t)
 
   (use-package docker-compose-mode
     :ensure t)
