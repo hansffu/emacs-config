@@ -73,6 +73,52 @@
  
 
 #+END_SRC
+* Evil keybindings
+#+BEGIN_SRC emacs-lisp
+  (use-package evil
+    :ensure t
+    :init ;; tweak evil's configuration before loading it
+    (setq evil-search-module 'evil-search)
+    (setq evil-ex-complete-emacs-commands nil)
+    (setq evil-vsplit-window-right t)
+    (setq evil-split-window-below t)
+    (setq evil-shift-round nil)
+    (setq evil-want-C-u-scroll t)
+    :config
+    (evil-mode))
+
+  (use-package evil-escape
+    :ensure t
+    :init
+    (setq-default evil-escape-key-sequence "jk")
+    (setq-default evil-escape-delay 0.2)
+    :config
+    (evil-escape-mode))
+
+  (use-package general
+    :ensure t
+    :config
+    (general-define-key
+     :states '(normal visual insert )
+     :prefix "SPC"
+     :non-normal-prefix "M-SPC"
+     "TAB" '(switch-to-prev-buffer :which-key "previous buffer")
+     "SPC" '(helm-M-x :which-key "M-x")
+     "p" ' (projectile-command-map :wk "projectile")
+     ;; Buffers
+     "bl"  '(helm-mini :which-key "buffers list")
+     ;; Window
+     "w/"  '(split-window-right :which-key "split right")
+     "w-"  '(split-window-below :which-key "split bottom")
+     "wk"  '(delete-window :which-key "delete window")
+     "qz"  '(delete-frame :which-key "delete frame")
+     "qq"  '(kill-emacs :which-key "quit")
+     ;; Files
+     "f" '(:wk "Files")
+     "ft"  '(neotree-toggle :which-key "toggle neotree")
+     )
+    )
+#+END_SRC
 * Plugins
 ** Utilities
 #+BEGIN_SRC emacs-lisp
@@ -81,9 +127,13 @@
 #+END_SRC
 ** Git
 #+BEGIN_SRC emacs-lisp
-(use-package magit
-  :ensure t
-  :bind ("C-x g" . magit-status))
+  (use-package magit
+    :ensure t
+    :bind ("C-x g" . magit-status))
+  
+  (use-package evil-magit
+    :ensure t
+    :requires evil)
 #+END_SRC
 
 ** Parentheses
@@ -91,11 +141,16 @@ To keep control of parantheses
 #+BEGIN_SRC emacs-lisp
   (use-package paredit
     :ensure t
-    :init
-    (add-hook 'prog-mode-hook 'enable-paredit-mode)
-    :bind
-    (("{" . paredit-open-curly)
-     ("}" . paredit-close-curly)))
+    :hook (prog-mode . enable-paredit-mode))
+
+  (use-package evil-cleverparens
+    :init   (add-hook 'paredit-mode-hook 'evil-cleverparens-mode)
+    :config (setq evil-cleverparens-swap-move-by-word-and-symbol t))
+
+  (use-package evil-surround
+    :ensure t
+    :config
+    (global-evil-surround-mode 1))
 #+END_SRC
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-delimiters
@@ -215,12 +270,13 @@ Multiple cursors
 
 ** File browser
 #+BEGIN_SRC emacs-lisp
-(use-package neotree
-  :ensure t
-  :config
-  (global-set-key (kbd "C-c t") 'neotree-toggle)
-  (setq neo-smart-open t)
-  (setq neo-theme 'arrow))
+  (use-package neotree
+    :ensure t
+    :init
+    (setq neo-smart-open t)
+    (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+    :config
+    (global-set-key (kbd "C-c t") 'neotree-toggle))
 
 #+END_SRC
 
