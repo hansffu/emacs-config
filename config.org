@@ -29,24 +29,34 @@
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-.") 'next-error)
 #+END_SRC
-* Appearance
 ** Save backup files out of the way
 #+BEGIN_SRC emacs-lisp
-(setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
-      backup-by-copying t    ; Don't delink hardlinks
-      version-control t      ; Use version numbers on backups
-      delete-old-versions t  ; Automatically delete excess backups
-      kept-new-versions 20   ; how many of the newest versions to keep
-      kept-old-versions 5    ; and how many of the old
-      )
+  (setq backup-directory-alist `((".*" . ,temporary-file-directory))
+	auto-save-file-name-transforms `((".*" ,temporary-file-directory t))
+	backup-by-copying t    ; Don't delink hardlinks
+	version-control t      ; Use version numbers on backups
+	delete-old-versions t  ; Automatically delete excess backups
+	kept-new-versions 20   ; how many of the newest versions to keep
+	kept-old-versions 5    ; and how many of the old
+	)
 #+END_SRC
 
+* Appearance
 ** Theme
 #+BEGIN_SRC emacs-lisp
   (use-package doom-themes
     :ensure t
     :config
     (load-theme 'doom-one t))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (custom-set-faces
+   ;; custom-set-faces was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(default ((t (:inherit nil :stipple nil :background "#222D32" :foreground "#eeffff" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 110 :width normal :foundry "nil" :family "Iosevka")))))
 #+END_SRC
 
 ** Powerline
@@ -160,7 +170,10 @@ To keep control of parantheses
 #+BEGIN_SRC emacs-lisp
   (use-package paredit
     :ensure t
-    :hook (prog-mode . enable-paredit-mode))
+    :hook (prog-mode . enable-paredit-mode)
+    :bind
+    (("{" . paredit-open-curly)
+     ("}" . paredit-close-curly)))
 
   (use-package evil-cleverparens
     :init   (add-hook 'paredit-mode-hook 'evil-cleverparens-mode)
@@ -332,22 +345,22 @@ Multiple cursors
     ;; Define fringe indicator / warning levels
     (define-fringe-bitmap 'flycheck-fringe-bitmap-ball
       (vector #b00000000
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00011100
-              #b00111110
-              #b00111110
-              #b00111110
-              #b00011100
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00000000))
+	      #b00000000
+	      #b00000000
+	      #b00000000
+	      #b00000000
+	      #b00000000
+	      #b00000000
+	      #b00011100
+	      #b00111110
+	      #b00111110
+	      #b00111110
+	      #b00011100
+	      #b00000000
+	      #b00000000
+	      #b00000000
+	      #b00000000
+	      #b00000000))
     (flycheck-define-error-level 'error
       :severity 2
       :overlay-category 'flycheck-error-overlay
@@ -363,6 +376,10 @@ Multiple cursors
       :overlay-category 'flycheck-info-overlay
       :fringe-bitmap 'flycheck-fringe-bitmap-ball
       :fringe-face 'flycheck-fringe-info))
+
+  (use-package lsp-ui
+    :ensure t
+    :hook (lsp-mode . lsp-ui-mode))
 #+END_SRC
 
 ** Web
