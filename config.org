@@ -108,39 +108,49 @@
 
 #+END_SRC
 ** Custom keybindings
-*** Top level keybindings
-    These keybindings are directly behind space
+*** Keybinding packages
+    Add general and hydra plugins to help set up keybindings
 #+BEGIN_SRC emacs-lisp
   (use-package general
-    :ensure t
-    :after evil
-    :config
-    (general-define-key
-     :states '(normal visual insert )
-     :prefix "SPC"
-     :non-normal-prefix "M-SPC"
-     "TAB" '(switch-to-prev-buffer :which-key "previous buffer")
-     "SPC" '(helm-M-x :which-key "M-x")
-     "p" ' (projectile-command-map :wk "projectile")
-     "bl"  '(helm-mini :which-key "buffers list")
-     "w"  '(hydra-window/body :wk "windows and frames")
-     "f" '(:wk "Files")
-     "ft"  '(neotree-toggle :which-key "toggle neotree")))
-#+END_SRC
-*** Key groups
-#+BEGIN_SRC emacs-lisp
+    :ensure t)
+
   (use-package hydra
     :ensure t)
 #+END_SRC
-**** Window
+*** Top level keybindings
+    These keybindings are directly behind space
+    #+BEGIN_SRC emacs-lisp
+      (general-create-definer space-binding
+	;; :prefix my-leader
+	:prefix "SPC"
+	:states '(normal))
+
+      (general-create-definer my-local-leader-def
+	;; :prefix my-local-leader
+	:prefix "SPC m")
+
+      (space-binding 
+	"TAB" '(switch-to-prev-buffer :wk "previous buffer")
+	"SPC" '(helm-M-x :wk "M-x")
+	"p" ' (projectile-command-map :wk "projectile")
+	"bl"  '(helm-mini :wk "buffers list"))
+    #+END_SRC
+*** Files 
+    #+BEGIN_SRC emacs-lisp
+      (space-binding
+	"f" '(:wk "Files")
+	"ft"  '(neotree-toggle :wk "toggle neotree"))
+    #+END_SRC
+*** Window
 #+BEGIN_SRC emacs-lisp
-  (defhydra hydra-window (:color blue)
-      ("/" split-window-right "split right")
-      ("-" split-window-below "split bottom")
-      ("k" delete-window "delete window")
-      ("z" delte-frame "delete frame")
-      ("r" hydra-window-resize/body "resize windows")
-      ("q" kill-emacs "quit"))
+  (space-binding
+    "w" '(:wk "windows and frames")
+    "w/" '(split-window-right :wk "split right")
+    "w-" '(split-window-below :wk "split bottom")
+    "wk" '(delete-window :wk "delete window")
+    "wz" '(delte-frame :wk "delete frame")
+    "wr" '(hydra-window-resize/body :wk "resize windows")
+    "wq" '(kill-emacs :wk "quit"))
 
   (defhydra hydra-window-resize (:color red)
     ("j" enlarge-window "enlarge vertically")
