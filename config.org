@@ -95,8 +95,10 @@
     (setq evil-split-window-below t)
     (setq evil-shift-round nil)
     (setq evil-want-C-u-scroll t)
+    (setq evil-want-integration nil)
     :config
-    (evil-mode))
+    (evil-mode)
+    (general-evil-setup))
 
   (use-package evil-escape
     :ensure t
@@ -105,6 +107,12 @@
     (setq-default evil-escape-delay 0.2)
     :config
     (evil-escape-mode))
+
+  (use-package evil-collection
+    :ensure t
+    :after evil
+    :config
+    (evil-collection-init))
 
 #+END_SRC
 ** Custom keybindings
@@ -132,7 +140,6 @@
       (space-binding 
 	"TAB" '(switch-to-prev-buffer :wk "previous buffer")
 	"SPC" '(helm-M-x :wk "M-x")
-	"p" ' (projectile-command-map :wk "projectile")
 	"bl"  '(helm-mini :wk "buffers list"))
     #+END_SRC
 *** Files 
@@ -158,11 +165,40 @@
     ("h" enlarge-window-horizontally "enlarge vertically")
     ("l" shrink-window-horizontally "shrink vertically"))
 #+END_SRC
+*** Avy
+    #+BEGIN_SRC emacs-lisp
+      (general-nmap
+	:prefix "g"
+	"c" 'avy-goto-char-2
+	"l" 'avy-goto-line
+	"w" 'avy-goto-word-1)
+      (general-omap
+	:prefix "g"
+	"c" 'evil-avy-goto-char-2
+	"l" 'evil-avy-goto-line
+	"w" 'evil-avy-goto-word-1)
+    #+END_SRC
+*** Project management
+    #+BEGIN_SRC emacs-lisp
+      (space-binding
+	"p"  '(:wk "Project managemen")
+	"pP" '(projectile-command-map :wk "Projectile")
+	"pf" '(helm-projectile-find-file :wk "Find file")
+	"pp" '(helm-projectile-switch-project :wk "Switch project")
+	"ps" '(helm-projectile-ag :wk "Search")
+	"pb" '(helm-projectile-switch-to-buffer :wk "Switch buffer")
+	"p SPC" '(helm-projectile :wk "Find anything")
+	"pg" '(projectile-vc :wk "Git"))
+    #+END_SRC
 * Plugins
 ** Utilities
 #+BEGIN_SRC emacs-lisp
   (use-package ag
     :ensure t)
+
+  (use-package helm-ag
+    :ensure t
+    :after '(helm ag))
 #+END_SRC
 ** Git
 #+BEGIN_SRC emacs-lisp
@@ -260,14 +296,14 @@ To keep control of parantheses
 #+END_SRC
 ** Navigation
 #+BEGIN_SRC emacs-lisp
-(use-package avy
-  :ensure t
-  :bind (("C-," . avy-goto-word-1)
-	 ("C-'" . avy-goto-char)))
+  (use-package avy
+    :ensure t
+    :bind (("C-," . avy-goto-word-1)
+	   ("C-'" . avy-goto-char)))
 
-(use-package crux
-  :ensure t
-  :bind (("C-a" . crux-move-beginning-of-line)))
+  (use-package crux
+    :ensure t
+    :bind (("C-a" . crux-move-beginning-of-line)))
 #+END_SRC
 Easier window navigation
 #+BEGIN_SRC emacs-lisp
