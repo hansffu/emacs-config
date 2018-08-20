@@ -158,11 +158,27 @@
     ("h" enlarge-window-horizontally "enlarge vertically")
     ("l" shrink-window-horizontally "shrink vertically"))
 #+END_SRC
+*** Goto/find
+    #+BEGIN_SRC emacs-lisp
+	    (space-binding
+	     "g" '(:wk "goto/find")
+	     "gr" '(xref-find-references :wk "find references")
+	     "gd" '(xref-find-definitions :wk "find definitions")
+	     "gb" '(xref-pop-marker-stack :wk "go back"))
+    #+END_SRC
 * Plugins
 ** Utilities
 #+BEGIN_SRC emacs-lisp
   (use-package ag
     :ensure t)
+
+  (use-package helm-ag
+    :ensure t)
+
+  (use-package helm-xref
+    :ensure t
+    :init
+    (setq xref-show-xrefs-function 'helm-xref-show-xrefs))
 #+END_SRC
 ** Git
 #+BEGIN_SRC emacs-lisp
@@ -186,6 +202,7 @@ To keep control of parantheses
      ("}" . paredit-close-curly)))
 
   (use-package evil-cleverparens
+    :ensure t
     :init   (add-hook 'paredit-mode-hook 'evil-cleverparens-mode)
     :config (setq evil-cleverparens-swap-move-by-word-and-symbol t))
 
