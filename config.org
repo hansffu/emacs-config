@@ -167,11 +167,12 @@
 #+END_SRC
 *** Goto/find
     #+BEGIN_SRC emacs-lisp
-	    (space-binding
-	     "g" '(:wk "goto/find")
-	     "gr" '(xref-find-references :wk "find references")
-	     "gd" '(xref-find-definitions :wk "find definitions")
-	     "gb" '(xref-pop-marker-stack :wk "go back"))
+      (space-binding
+       "g" '(:wk "goto/find")
+       "gr" '(xref-find-references :wk "find references")
+       "gd" '(xref-find-definitions :wk "find definitions")
+       "gb" '(xref-pop-marker-stack :wk "go back"))
+    #+END_SRC
 *** Avy
     #+BEGIN_SRC emacs-lisp
       (general-nmap
@@ -204,14 +205,13 @@
     :ensure t)
 
   (use-package helm-ag
-    :ensure t)
+    :ensure t
+    :after '(helm ag))
 
   (use-package helm-xref
     :ensure t
     :init
     (setq xref-show-xrefs-function 'helm-xref-show-xrefs))
-    :ensure t
-    :after '(helm ag))
 #+END_SRC
 ** Git
 #+BEGIN_SRC emacs-lisp
