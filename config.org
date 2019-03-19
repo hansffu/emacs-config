@@ -88,6 +88,7 @@
 #+BEGIN_SRC emacs-lisp
   (use-package evil
     :ensure t
+    :after (general)
     :init ;; tweak evil's configuration before loading it
     (setq evil-search-module 'evil-search)
     (setq evil-ex-complete-emacs-commands nil)
@@ -111,7 +112,8 @@
 
   (use-package evil-collection
     :ensure t
-    :after evil
+    :after (evil)
+    :requires evil
     :config
     (evil-collection-init))
 
