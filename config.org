@@ -96,6 +96,7 @@
     (setq evil-shift-round nil)
     (setq evil-want-C-u-scroll t)
     (setq evil-want-integration nil)
+    (setq evil-want-keybinding nil)
     :config
     (evil-mode)
     (general-evil-setup))
@@ -499,13 +500,13 @@ Multiple cursors
 	(setq-local flycheck-javascript-eslint-executable eslint))))
 
 
-  (use-package lsp-javascript-typescript
-    :ensure t
-    :config
-    (add-hook 'js-mode-hook #'lsp-javascript-typescript-enable)
-    (add-hook 'typescript-mode-hook #'lsp-javascript-typescript-enable)
-    (add-hook 'js3-mode-hook #'lsp-javascript-typescript-enable)
-    (add-hook 'rjsx-mode #'lsp-javascript-typescript-enable))
+  ;; (use-package lsp-javascript-typescript
+  ;;   :ensure t
+  ;;   :config
+  ;;   (add-hook 'js-mode-hook #'lsp-javascript-typescript-enable)
+  ;;   (add-hook 'typescript-mode-hook #'lsp-javascript-typescript-enable)
+  ;;   (add-hook 'js3-mode-hook #'lsp-javascript-typescript-enable)
+  ;;   (add-hook 'rjsx-mode #'lsp-javascript-typescript-enable))
 
   (defun my-company-transformer (candidates)
     (let ((completion-ignore-case t))
