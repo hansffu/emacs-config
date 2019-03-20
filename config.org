@@ -14,20 +14,37 @@
 (setq custom-file "~/.emacs.d/custom.el")
 #+END_SRC
 
+** System packages
+#+BEGIN_SRC emacs-lisp
+  (use-package system-packages
+    :ensure t)
+
+  (use-package use-package-ensure-system-package
+    :ensure t)
+#+END_SRC
 ** Turn off unneeded ui elements
 #+BEGIN_SRC emacs-lisp
-(setq inhibit-splash-screen t)
-(global-linum-mode 1)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
-(setq ring-bell-function 'ignore)
-(defalias 'yes-or-no-p 'y-or-n-p)
+  (setq inhibit-splash-screen t)
+  (global-linum-mode 1)
+  (tool-bar-mode -1)
+;  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
+  (setq ring-bell-function 'ignore)
+  (defalias 'yes-or-no-p 'y-or-n-p)
+
+  ;(add-to-list 'default-frame-alist '(ns-appearance . dark))
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'default-frame-alist '(ns-appearance . dark))
 #+END_SRC
 
 ** Rebind some keys
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-.") 'next-error)
+  
+  (setq mac-option-key-is-meta nil)
+  (setq mac-command-key-is-meta t)
+  (setq mac-command-modifier 'meta)
+  (setq mac-option-modifier nil)
 #+END_SRC
 ** Save backup files out of the way
 #+BEGIN_SRC emacs-lisp
@@ -72,10 +89,12 @@
 ** Fonts
 #+BEGIN_SRC emacs-lisp
   (cond 
+   ((find-font (font-spec :name "Hack"))
+    (set-frame-font "Hack-12"))
    ((find-font (font-spec :name "Iosevka Medium"))
     (set-frame-font "Iosevka Medium-13"))
    ((find-font (font-spec :name "DejaVu Sans Mono for Powerline"))
-    (set-frame-font "DejaVu Sans Mono for Powerline"-12))
+    (set-frame-font "DejaVu Sans Mono for Powerline-12"))
    ((find-font (font-spec :name "DejaVu Sans Mono"))
     (set-frame-font "DejaVu Sans Mono-12"))
    ((find-font (font-spec :name "courier"))
@@ -96,27 +115,26 @@
     (setq evil-split-window-below t)
     (setq evil-shift-round nil)
     (setq evil-want-C-u-scroll t)
-    (setq evil-want-integration nil)
+    (setq evil-want-integration t)
     (setq evil-want-keybinding nil)
     :config
-    (evil-mode)
+    (evil-mode 1)
     (general-evil-setup))
+
+  (use-package evil-collection
+    :ensure t
+    :after evil
+    :config
+    (evil-collection-init))
 
   (use-package evil-escape
     :ensure t
+    :after evil
     :init
     (setq-default evil-escape-key-sequence "jk")
     (setq-default evil-escape-delay 0.2)
     :config
     (evil-escape-mode))
-
-  (use-package evil-collection
-    :ensure t
-    :after (evil)
-    :requires evil
-    :config
-    (evil-collection-init))
-
 #+END_SRC
 ** Custom keybindings
 *** Keybinding packages
@@ -205,7 +223,8 @@
 ** Utilities
 #+BEGIN_SRC emacs-lisp
   (use-package ag
-    :ensure t)
+    :ensure t
+    :ensure-system-package (ag . the_silver_searcher))
 
   (use-package helm-ag
     :ensure t
@@ -221,10 +240,14 @@
   (use-package magit
     :ensure t
     :bind ("C-x g" . magit-status))
-  
+
+  (use-package magit-popup
+    :ensure t
+    :requires magit)
+
   (use-package evil-magit
     :ensure t
-    :requires evil)
+    :requires (evil magit magit-popup))
 #+END_SRC
 
 ** Parentheses
@@ -472,11 +495,11 @@ Multiple cursors
 	   (lambda ()
 	     (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))))
 
-  (use-package rjsx-mode
-    :ensure t
-    :config
-    (add-to-list 'magic-mode-alist 
-	   '("\\(import.*from \'react\';\\|\/\/ @flow\nimport.*from \'react\';\\)" . rjsx-mode)))
+  ;; (use-package rjsx-mode
+  ;;   :ensure t
+  ;;   :config
+  ;;   (add-to-list 'magic-mode-alist 
+  ;; 	 '("\\(import.*from \'react\';\\|\/\/ @flow\nimport.*from \'react\';\\)" . rjsx-mode)))
 
   (use-package web-mode
     :ensure t
@@ -520,6 +543,53 @@ Multiple cursors
 
   (add-hook 'js-mode-hook 'my-js-hook)
 #+END_SRC
+**** Typescript
+#+BEGIN_SRC emacs-lisp
+  (setq-default typescript-indent-level 2)
+
+  (defun setup-tide-mode ()
+    (interactive)
+    (tide-setup)
+    (flycheck-mode +1)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (tide-hl-identifier-mode +1)
+    ;; company is an optional dependency. You have to
+    ;; install it separately via package-install
+    ;; `M-x package-install [ret] company`
+    (company-mode +1))
+
+  (use-package tide
+    :ensure t
+    :init
+
+    (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+    (add-hook 'web-mode-hook
+             (lambda ()
+               (when (string-equal "tsx" (file-name-extension buffer-file-name))
+                 (setup-tide-mode))))
+    ;; enable typescript-tslint checker
+    (flycheck-add-mode 'typescript-tslint 'web-mode)
+    )
+
+
+  (defun tide-annotate-completions (completions prefix file-location)
+    (-map
+     (lambda (completion)
+       (let ((name (plist-get completion :name)))
+        (put-text-property 0 1 'file-location file-location name)
+        (put-text-property 0 1 'completion completion name)
+        name))
+     (-sort
+      'tide-compare-completions
+      (-filter
+       (let ((member-p (tide-member-completion-p prefix)))
+        (lambda (completion)
+          (and (string-prefix-p prefix (plist-get completion :name))
+               (or (not member-p)
+                   (member (plist-get completion :kind) '("warning" "export" "method" "property" "getter" "setter"))))))
+       completions))))
+#+END_SRC
 *** Code format on save
 Uses prettier. Install with npm install -g prettier
 #+BEGIN_SRC emacs-lisp
@@ -533,6 +603,7 @@ Uses prettier. Install with npm install -g prettier
                           ))
     (add-hook 'js2-mode-hook 'prettier-js-mode)
     (add-hook 'rjsx-mode-hook 'prettier-js-mode)
+    (add-hook 'web-mode-hook 'prettier-js-mode)
     (add-hook 'scss-mode-hook 'prettier-js-mode))
 
   (defun jc/use-eslint-from-node-modules ()
