@@ -400,19 +400,51 @@ Multiple cursors
 
 ** Auto complete in code
 #+BEGIN_SRC emacs-lisp
+  ;; (use-package company
+  ;;   :ensure t
+  ;;   :bind (("C-å" . company-complete))
+  ;;   :diminish
+  ;;   :config
+  ;;   (add-hook 'after-init-hook 'global-company-mode)
+  ;;   (setq company-idle-delay t))
+  ;; (global-company-mode 1)
+
+
   (use-package company
     :ensure t
+    :diminish ""
     :bind (("C-å" . company-complete))
-    :diminish
+    :init
+    (add-hook 'prog-mode-hook 'company-mode)
+    ;; (add-hook 'comint-mode-hook 'company-mode)
     :config
-    (add-hook 'after-init-hook 'global-company-mode)
-    (setq company-idle-delay t))
-  (global-company-mode 1)
+    (global-company-mode)
+    (setq company-tooltip-limit 10)
+    (setq company-dabbrev-downcase 0)
+    (setq company-idle-delay 0)
+    (setq company-echo-delay 0)
+    (setq company-minimum-prefix-length 2)
+    (setq company-require-match nil)
+    (setq company-selection-wrap-around t)
+    (setq company-tooltip-align-annotations t)
+    ;; (setq company-tooltip-flip-when-above t)
+    (setq company-transformers '(company-sort-by-occurrence)) ; weight by frequency
+    (define-key company-active-map (kbd "M-n") nil)
+    (define-key company-active-map (kbd "M-p") nil)
+    (define-key company-active-map (kbd "C-å") 'company-complete)
+    (define-key company-active-map (kbd "C-j") 'company-select-next)
+    (define-key company-active-map (kbd "C-k") 'company-select-previous)
+    (define-key company-active-map (kbd "TAB") 'company-complete--or-cycle)
+    (define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)
+    (define-key company-active-map (kbd "RET") 'company-complete-selection)
+    (define-key company-active-map (kbd "S-TAB") 'company-select-previous)
+    (define-key company-active-map (kbd "<backtab>") 'company-select-previous))
 
   (use-package company-lsp
     :ensure t
     :init
-    (push 'company-lsp company-backends))
+    (push 'company-lsp company-backends)
+    :after (company lsp))
 
   (use-package company-box
     :ensure t
@@ -463,11 +495,30 @@ Multiple cursors
       :fringe-bitmap 'flycheck-fringe-bitmap-ball
       :fringe-face 'flycheck-fringe-info))
 
-  (use-package lsp-ui
-    :ensure t
-    :hook (lsp-mode . lsp-ui-mode))
+;  (use-package lsp-ui
+;    :ensure t
+;    :hook (lsp-mode . lsp-ui-mode))
 #+END_SRC
 
+** LSP
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :ensure t
+    :defer t
+    :config
+    (require 'lsp-clients)
+    (add-hook 'web-mode-hook 'lsp))
+
+
+  (use-package lsp-ui
+    :ensure t
+    :bind
+    (("M-RET" . lsp-ui-sideline-apply-code-actions))
+    :commands lsp-ui-mode)
+  (use-package company-lsp
+    :ensure t
+    :commands company-lsp)
+#+END_SRC
 ** Web
 *** JS, React and Web mode
 #+BEGIN_SRC emacs-lisp
@@ -503,12 +554,21 @@ Multiple cursors
 
   (use-package web-mode
     :ensure t
-    :mode ("\\.html\\'")
+    :mode (("\\.html?\\'" . web-mode)
+	   ("\\.tsx\\'" . web-mode)
+	   ("\\.jsx\\'" . web-mode))
     :config
-    (setq web-mode-markup-indent-offset 2)
-    (setq web-mode-engines-alist
-	  '(("django" . "focus/.*\\.html\\'")
-	    ("ctemplate" . "realtimecrm/.*\\.html\\'"))))
+    (setq web-mode-markup-indent-offset 2
+	  web-mode-css-indent-offset 2
+	  web-mode-code-indent-offset 2
+	  web-mode-block-padding 2
+	  web-mode-comment-style 2
+	
+	  web-mode-enable-css-colorization t
+	  web-mode-enable-auto-pairing t
+	  web-mode-enable-comment-keywords t
+	  web-mode-enable-current-element-highlight t
+	  web-mode-enable-auto-indentation nil))
 
   (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
   (add-hook 'rjsx-mode-hook (lambda () (setq js2-basic-offset 2)))
@@ -546,6 +606,8 @@ Multiple cursors
 **** Typescript
 #+BEGIN_SRC emacs-lisp
   (setq-default typescript-indent-level 2)
+    (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.ts\\'" . web-mode))
 
   (defun setup-tide-mode ()
     (interactive)
@@ -560,6 +622,7 @@ Multiple cursors
     (company-mode +1))
 
   (use-package tide
+    :disabled
     :ensure t
     :init
 
